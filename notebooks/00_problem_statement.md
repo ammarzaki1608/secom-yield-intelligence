@@ -1,0 +1,9 @@
+Problem Statement
+
+Semiconductor and SSD manufacturing generate hundreds of in-line sensor and process measurements per unit, but only a small fraction of units ultimately fail final test — making it difficult to catch quality issues early using manual inspection alone. This project uses the SECOM dataset (590 anonymized sensor/process features across 1,567 wafer runs, ~6.6% failure rate) to build a quality analytics pipeline that identifies process instability, quantifies capability against expected tolerances, and predicts unit-level failures before they reach final test — with failure predictions traceable back to the specific process parameters driving them, so an engineer can act on the result rather than treat it as a black box.
+
+Cost Asymmetry Assumption
+
+A missed failure (false negative) — a bad unit predicted as good — risks a customer escape, which in SSD/NAND manufacturing can mean a warranty claim, a field failure, or in the worst case a broader lot-level customer investigation. A false alarm (false positive) — a good unit flagged as failing — costs additional inspection or retest time, which is comparatively cheap.
+
+Stated assumption: a missed failure is roughly 15x more costly than a false alarm. This ratio isn't derived from real financial data (SECOM doesn't provide it) — it's a deliberate, documented assumption based on how OQA/ORT economics typically work in this industry, and it's what will drive the classification threshold in Phase 4 rather than defaulting to 0.5. If this number were wrong by 2-3x in either direction, the conclusion would still hold: false negatives should be weighted much more heavily than false positives.
