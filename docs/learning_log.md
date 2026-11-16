@@ -28,3 +28,17 @@
   8,008 missing values were left. Check the content, not only the shape.
 - Missingness can carry information: sensors 72, 73 and 345 are missing on about 35% of
   failing units but 52% of passing units. Dropping them throws that signal away.
+
+## Phase 1b: train/test split
+- Split by position after sorting, never randomly: a random split puts future
+  units in training and near-twin neighbours across the split, so scores look
+  better than they will in real use.
+- 32 timestamps are shared by 65 different units (none are copies), so do not
+  deduplicate by timestamp. The cut must not fall between two tied rows, so the
+  function checks it.
+- Test set is locked until the end: no exploration, no threshold or feature
+  choices, no repeated peeking. With only 26 test failures, recall estimates
+  are wide (about 32%-68% for a true 50%).
+- Bug I hit: `load_secom(raw_dir)` accepted an argument but hardcoded the path,
+  so it only worked from one folder. A parameter that is ignored is worse than
+  none. Also a typo in a column name (`"timetamp"`) crashed the split: run the code.
