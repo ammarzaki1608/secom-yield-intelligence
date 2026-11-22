@@ -45,6 +45,7 @@ reports/figures/ # exported charts (empty for now)
 python -m venv venv
 venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+pip install -e .
 ```
 
 ## How this project was built
