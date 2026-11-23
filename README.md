@@ -22,15 +22,16 @@ data/raw/        # raw SECOM files (gitignored, see above)
 data/processed/  # cleaned data output (empty for now)
 docs/            # problem statement and learning log
 notebooks/       # numbered phases, run in order
-src/             # reusable pipeline functions (empty for now; I will write them myself)
+src/secom/       # reusable package: loading, time split, leakage-safe cleaning
+tests/           # pytest tests for src/secom
 reports/figures/ # exported charts (empty for now)
 ```
 
 ## Progress
 
 - [x] **Phase 0 - Define:** problem statement and cost-asymmetry assumption (`docs/problem_statement.md`, draft)
-- [ ] **Phase 1 - Load and split:** chronological train/test split. A baseline load-and-clean notebook exists (`notebooks/01_data_loading_and_cleaning.ipynb`).
-- [ ] **Phase 2 - Leakage-safe cleaning:** drop rules and medians learned from the training period only
+- [x] **Phase 1 - Load and split:** chronological train/test split. A baseline load-and-clean notebook exists (`notebooks/01_data_loading_and_cleaning.ipynb`).
+- [x] **Phase 2 - Leakage-safe cleaning:** drop rules and medians learned from the training period only
 - [ ] **Phase 3 - SPC control charts:** I-MR charts, training period as the Phase I baseline, Nelson rules
 - [ ] **Phase 4 - Process capability:** Cp, Cpk, Pp, Ppk with proxy spec limits
 - [ ] **Phase 5 - Root cause / feature hypotheses**
