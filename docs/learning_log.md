@@ -42,3 +42,28 @@
 - Bug I hit: `load_secom(raw_dir)` accepted an argument but hardcoded the path,
   so it only worked from one folder. A parameter that is ignored is worse than
   none. Also a typo in a column name (`"timetamp"`) crashed the split: run the code.
+
+## Phase 2: leakage-safe cleaning
+- Cleaning is split into two functions: `fit_cleaning(train)` learns the rules
+  from the training period only, and `apply_cleaning(df, rules)` applies those
+  fixed rules to any table without recomputing anything.
+- The rules store the sensors to keep (not to drop), so train and test always
+  come out with the same columns. A new or unknown sensor is ignored on purpose.
+- The rules also store the train median of each kept sensor. Test gaps are filled
+  with the train median, never the test median.
+- If a sensor the rules need is missing from the input, `apply_cleaning` raises an
+  error instead of quietly filling the gap.
+- Wrote the tests before the code (test-first): watch them fail, then write the
+  code until they pass. Tiny tables with known answers, plus one boundary sensor at
+  exactly 20% missing to catch `<` vs `<=` mistakes.
+- Result on SECOM: train-only rules drop 52 sensors for missing (baseline 32) and
+  122 as constant (baseline 116), keeping 416 (baseline 442). The rules depend on
+  how the data is distributed over time, not only on the number of rows.
+- 20 sensors (546-557 and 562-569) are about 24% missing in train but about 1% in
+  test. The baseline kept them only because it averaged in the later, complete data.
+- Learned to read list comprehensions: `[c for c in keep if c not in df.columns]`
+  is a short `for` loop with an `if` that builds a list.
+- Bug I hit: wrote `>= 0.2` and `== 1` when counting drops, instead of `> 0.2` and
+  `<= 1`. The numbers happened to be right, because no sensor sits exactly on those
+  boundaries in this data. Boundaries must match the function, even when the
+  output looks correct.
