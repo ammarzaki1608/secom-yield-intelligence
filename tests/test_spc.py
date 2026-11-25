@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from secom.spc import fit_limits, flag_outside
+from secom.spc import fit_limits, flag_outside, flag_runs
 
 
 def test_fit_limits_known_answer():
@@ -20,3 +20,30 @@ def test_shift_is_flagged():
 
     assert flagged.sum() == 10
     assert flagged[:10].sum() == 0 
+
+
+def test_flag_runs_known_answer():
+    values = np.array([11, 12, 13, 9, 11, 9, 8, 7, 6])
+    limits = {"centre": 10}
+
+    flagged = flag_runs(values, limits, run_length=3)
+
+    assert list(flagged) == [False, False, True, False, False, False, False, True, True]
+
+
+def test_point_on_centre_resets_run():
+    values = np.array([11, 12, 10, 13, 14, 15])
+    limits = {"centre": 10}
+
+    flagged = flag_runs(values, limits, run_length=3)
+
+    assert list(flagged) == [False, False, False, False, False, True]
+
+
+def test_default_run_length_is_nine():
+    values = np.array([11] * 10)          # ten 11s in a row
+    limits = {"centre": 10}
+
+    flagged = flag_runs(values, limits)   # no run_length given
+
+    assert list(flagged) == [False] * 8 + [True] * 2

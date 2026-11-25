@@ -19,3 +19,25 @@ def fit_limits(baseline):
 def flag_outside(values, limits):
     """Return True for each value outside the control limits."""
     return (values < limits["lower"]) | (values > limits["upper"])
+
+
+def flag_runs(values, limits, run_length=9):
+    """Return True where run_length or more points in a row are on one side of the centre."""
+    flags = []
+    count = 0
+    previous_side = 0
+
+    for value in values:
+        side = np.sign(value - limits["centre"])
+
+        if side == 0:                    # exactly on the centre line: no side
+            count = 0
+        elif side == previous_side:               # same side as the last point
+            count = count + 1
+        else:                            # changed side: a new run starts
+            count = 1
+
+        flags.append(count >= run_length)
+        previous_side = side             # remember for the next point
+
+    return np.array(flags)
