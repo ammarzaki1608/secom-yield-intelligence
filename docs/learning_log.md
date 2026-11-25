@@ -67,3 +67,21 @@
   `<= 1`. The numbers happened to be right, because no sensor sits exactly on those
   boundaries in this data. Boundaries must match the function, even when the
   output looks correct.
+
+## Phase 3: SPC control charts
+- Fitting learns the centre and limits from a baseline. Applying checks any points
+  against those fixed limits, including the points left out of the baseline.
+- Used the moving range for sigma because the overall standard deviation counts a
+  shift as normal spread. Toy data with a shift: overall std 10.32 gave 0 of 20 points
+  outside; moving-range sigma 2.43 flagged all 20.
+- The outside rule catches single unusual values. The run rule catches a sustained
+  shift, even when every point is inside the limits.
+- Extreme points cause two mistakes: they widen the limits, so real outliers are
+  missed, and they pull the centre, so ordinary points are flagged as runs. In
+  sensor_67, four points caused 1,052 run points; one refit left 58.
+- Refit only once, because removing points without a known cause makes the next limits
+  narrower, so ordinary points get flagged as false alarms.
+- My guess that the outside and run counts were negatively correlated was wrong: it is
+  about +0.44. Test a guess before writing it down.
+- Bug I hit: hardcoded `count >= 3` in `flag_runs`, ignoring `run_length`. The tests
+  passed because they all used 3. Test at least two values of a parameter.
