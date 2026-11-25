@@ -2,7 +2,7 @@
 
 A DMAIC-structured quality analytics project on the SECOM semiconductor manufacturing dataset — applying Statistical Process Control, process capability analysis, and root-cause-informed feature engineering before training a failure-prediction model, rather than treating this as a plain classification exercise.
 
-**Status: Phase 3 in progress.**
+**Status: Phase 3 complete, Phase 4 next.**
 
 ## Why this project
 
@@ -22,7 +22,7 @@ data/raw/        # raw SECOM files (gitignored, see above)
 data/processed/  # cleaned data output (empty for now)
 docs/            # problem statement and learning log
 notebooks/       # numbered phases, run in order
-src/secom/       # reusable package: loading, time split, leakage-safe cleaning
+src/secom/       # reusable package: loading, time split, leakage-safe cleaning, SPC charts
 tests/           # pytest tests for src/secom
 reports/figures/ # exported charts (empty for now)
 ```
@@ -32,7 +32,7 @@ reports/figures/ # exported charts (empty for now)
 - [x] **Phase 0 - Define:** problem statement and cost-asymmetry assumption (`docs/problem_statement.md`, draft)
 - [x] **Phase 1 - Load and split:** chronological train/test split. A baseline load-and-clean notebook exists (`notebooks/01_data_loading_and_cleaning.ipynb`).
 - [x] **Phase 2 - Leakage-safe cleaning:** drop rules and medians learned from the training period only
-- [ ] **Phase 3 - SPC control charts:** I-MR charts, training period as the Phase I baseline, Nelson rules
+- [x] **Phase 3 - SPC control charts:** I-MR charts, outside-3-sigma rule and run rule (9 in a row), training period only
 - [ ] **Phase 4 - Process capability:** Cp, Cpk, Pp, Ppk with proxy spec limits
 - [ ] **Phase 5 - Root cause / feature hypotheses**
 - [ ] **Phase 6 - Modelling:** XGBoost, time-ordered validation, cost-aware threshold
@@ -59,15 +59,13 @@ write and run most of the code myself, then explain it back.
 
 Claude's direct contributions in the rebuild: the final version of
 `src/secom/data.py`, skeletons with blanks for `src/secom/cleaning.py`, parts of
-the tests, the final layout and text of notebook 02, the Phase 2 entry in the
-learning log, and edits to other documentation.
+the tests, the final layout and text of notebook 02, 03, the Phase 2, Phase 3 entry in the learning log, and edits to other documentation. 
 
 **Done so far:**
-- Loading the raw SECOM files and joining sensors to labels by row order
-- Converting timestamps and sorting in time order
-- Missing-value analysis, dropping sparse and constant sensors, median fill
-  (baseline only: the rules use all rows, so they leak; the redesign fixes this)
+- Loading the raw SECOM files, joining sensors to labels and sorting by time
+- Chronological train/test split, with the test period kept locked
+- Leakage-safe cleaning: drop rules and medians learned from the training period only
+- SPC control charts on the training period, with one refit where outliers distorted a baseline
 
-**Not yet done:** SPC control charts, process capability (Cp/Cpk), root-cause
-analysis, modelling. Anything in this repo that I have not rebuilt is clearly
-marked as such.
+**Not yet done:** process capability (Cp/Cpk), root-cause analysis, modelling. Notebook 01
+is an early baseline whose cleaning rules use all rows, so they leak; notebook 02 replaces it.
