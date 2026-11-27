@@ -1,12 +1,29 @@
-> **DRAFT: AI-generated, to be rewritten in Phase 4.**
-> The "15x" cost ratio below is an unvalidated assumption that I have not yet reasoned through myself.
-
 # Problem Statement
 
-Semiconductor and SSD manufacturing generate hundreds of in-line sensor and process measurements per unit, but only a small fraction of units ultimately fail final test — making it difficult to catch quality issues early using manual inspection alone. This project uses the SECOM dataset (590 anonymized sensor/process features across 1,567 production entities, ~6.6% failure rate) to build a quality analytics pipeline that identifies process instability, quantifies capability against expected tolerances, and predicts unit-level failures before they reach final test — with failure predictions traceable back to the specific process parameters driving them, so an engineer can act on the result rather than treat it as a black box.
+> Short version. The cost assumption will be worked out in Phase 6 (modelling).
 
-## Cost Asymmetry Assumption
+## The problem
 
-A missed failure (false negative) — a bad unit predicted as good — risks a customer escape, which in SSD/NAND manufacturing can mean a warranty claim, a field failure, or in the worst case a broader lot-level customer investigation. A false alarm (false positive) — a good unit flagged as failing — costs additional inspection or retest time, which is comparatively cheap.
+In semiconductor manufacturing, each unit passes through hundreds of measured process
+steps, but failures are only confirmed at final test. If unusual process behaviour can be
+spotted earlier, fewer bad units travel further down the line.
 
-Stated assumption: a missed failure is roughly 15x more costly than a false alarm. This ratio isn't derived from real financial data (SECOM doesn't provide it) — it's a deliberate, documented assumption based on how OQA/ORT economics typically work in this industry, and it's what will drive the classification threshold in Phase 4 rather than defaulting to 0.5. If this number were wrong by 2-3x in either direction, the conclusion would still hold: false negatives should be weighted much more heavily than false positives.
+SECOM has 1,567 units with 590 anonymous sensor readings each; 104 (6.6%) failed. The
+sensors have no names, units or spec limits, so results can point to a sensor number
+but not say what it physically measures.
+
+## What this project does
+
+1. Checks whether the process is stable over time (SPC control charts)
+2. Estimates how much room the process has relative to proxy spec limits, since no
+   real limits are available (process capability)
+3. Looks for sensors whose behaviour differs between failing and passing units
+4. Predicts failures using only information available before final test, and checks
+   that the sensors the model relies on are consistent with steps 1-3
+
+## Errors and their cost (open question)
+
+A missed failure (a bad unit passed as good) is likely more costly than a false alarm
+(a good unit sent for extra checks), but SECOM gives no cost data. Phase 6 will choose
+the decision threshold under a range of stated cost ratios and show how much the result
+depends on that choice, rather than relying on one assumed number.
